@@ -51,6 +51,7 @@ class TeamsController < ApplicationController
 
   def change_owner
     if @team.update(owner_id: params[:format])
+      AssignMailer.owner_mail(@team.owner.email, @team.name).deliver
       redirect_to team_url, notice: I18n.t('views.messages.leader_authority_transferred')
     else
       flash.now[:error] = I18n.t('views.messages.leader_authority_transfer_failed')
