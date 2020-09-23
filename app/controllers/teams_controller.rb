@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy change_owner]
 
   def index
     @teams = Team.all
@@ -16,9 +16,7 @@ class TeamsController < ApplicationController
   end
 
   def edit
-    unless current_user == @team.owner
-      redirect_to team_path, notice: I18n.t('views.messages.not_authorized')
-    end
+    redirect_to team_path, notice: I18n.t('views.messages.not_authorized') unless current_user == @team.owner
   end
 
   def create
@@ -51,7 +49,16 @@ class TeamsController < ApplicationController
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
 
-  private
+  def change_owner
+    if @team.update(owner_id: params[:format])
+      redirect_to team_url, notice: I18n.t('views.messages.leader_authority_transferred')
+    else
+      flash.now[:error] = I18n.t('views.messages.leader_authority_transfer_failed')
+      redirect_to team_url
+    end
+  end
+
+    private
 
   def set_team
     @team = Team.friendly.find(params[:id])
@@ -60,4 +67,4 @@ class TeamsController < ApplicationController
   def team_params
     params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id]
   end
-end
+  end
