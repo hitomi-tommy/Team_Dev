@@ -1,3 +1,4 @@
+
 class UsersController < ApplicationController
   def edit
     @user = current_user
@@ -17,7 +18,6 @@ class UsersController < ApplicationController
   end
 
   private
-
   def user_params
     params.require(:user).permit(:email, :icon, :keep_team_id)
   end
