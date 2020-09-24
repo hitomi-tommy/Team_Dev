@@ -11,6 +11,5 @@ class AssignMailer < ApplicationMailer
     @email = email
     @team_name = team_name
     mail to: @email, subject: "#{team_name}のリーダー権限が付与されました"
-
   end
 end
